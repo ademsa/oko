@@ -1,8 +1,10 @@
 use anyhow::{Context, Result};
 use clap::Parser;
+use confy::load;
 use env_logger;
 use log::info;
 use minigrep::find_matches;
+use serde::{Deserialize, Serialize};
 use std::fs::read_to_string;
 use std::io::stdout;
 use std::path::PathBuf;
@@ -13,9 +15,39 @@ struct Cli {
     path: PathBuf,
 }
 
+#[derive(Default, Debug, Serialize, Deserialize)]
+struct Config {
+    color: String,
+}
+
 fn main() -> Result<()> {
+    // Initialise logger
     env_logger::init();
+
     info!("Welcome!");
+
+    // Default config
+    let default_config = Config {
+        color: "#FF0000".to_string(),
+    };
+
+    // Store default configuration file if none found
+    // Config file path: /Users/USERNAME/Library/Application\ Support/rs.minigrep/local.toml
+    let _: Config =
+        confy::get_configuration_file_path("minigrep", "local").and_then(|file_path| {
+            if file_path.exists() {
+                let cfg: Config = load("minigrep", "local")?;
+                Ok(cfg)
+            } else {
+                info!("Config file not found");
+                confy::store("minigrep", "local", &default_config)?;
+                info!("Stored default config at {}", file_path.display());
+                Ok(default_config)
+            }
+        })?;
+
+    // Display cfg
+    // dbg!(cfg);
 
     let args = Cli::parse();
 
