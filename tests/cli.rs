@@ -23,7 +23,10 @@ fn find_matches() -> Result<()> {
     let mut cmd = Command::cargo_bin("minigrep")?;
 
     cmd.arg("my").arg(file.path());
-    cmd.assert().success().stdout(contains("2: my\n"));
+
+    cmd.assert()
+        .success()
+        .stdout(contains("2: \u{1b}[32mmy\u{1b}[39m\n"));
 
     file.close().unwrap();
 

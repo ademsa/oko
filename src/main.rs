@@ -2,8 +2,10 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use confy::load;
 use env_logger;
+
 use log::info;
 use minigrep::find_matches;
+use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
 use std::fs::read_to_string;
 use std::io::stdout;
@@ -28,12 +30,12 @@ fn main() -> Result<()> {
 
     // Default config
     let default_config = Config {
-        color: "#FF0000".to_string(),
+        color: "green".to_string(),
     };
 
     // Store default configuration file if none found
     // Config file path: /Users/USERNAME/Library/Application\ Support/rs.minigrep/local.toml
-    let _: Config =
+    let cfg: Config =
         confy::get_configuration_file_path("minigrep", "local").and_then(|file_path| {
             if file_path.exists() {
                 let cfg: Config = load("minigrep", "local")?;
@@ -47,14 +49,17 @@ fn main() -> Result<()> {
         })?;
 
     // Display cfg
-    // dbg!(cfg);
+    //dbg!(&cfg);
+
+    // Find color from configuration
+    let color = AnsiColors::from(cfg.color.as_str());
 
     let args = Cli::parse();
 
     let content = read_to_string(&args.path)
         .with_context(|| format!("Error reading file {}", args.path.display()))?;
 
-    find_matches(&content, &args.pattern, &mut stdout());
+    find_matches(color, &content, &args.pattern, &mut stdout());
 
     info!("Bye!");
     Ok(())

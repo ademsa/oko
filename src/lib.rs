@@ -1,9 +1,11 @@
+use owo_colors::{AnsiColors, OwoColorize};
 use std::io::Write;
 
-pub fn find_matches(content: &str, pattern: &str, mut writer: impl Write) {
+pub fn find_matches(color: AnsiColors, content: &str, pattern: &str, mut writer: impl Write) {
     for (idx, line) in content.lines().enumerate() {
         if line.contains(&pattern) {
-            writeln!(writer, "{}: {}", idx + 1, line).unwrap();
+            // Write match and apply color
+            writeln!(writer, "{}: {}", idx + 1, line.color(color)).unwrap();
         }
     }
 }
