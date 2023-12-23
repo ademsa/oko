@@ -7,8 +7,8 @@ use log::info;
 use minigrep::find_matches;
 use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
-use std::fs::read_to_string;
-use std::io::stdout;
+use std::fs::File;
+use std::io::{stdout, BufReader};
 use std::path::PathBuf;
 
 #[derive(Parser)]
@@ -54,12 +54,15 @@ fn main() -> Result<()> {
     // Find color from configuration
     let color = AnsiColors::from(cfg.color.as_str());
 
+    // Parse arguments
     let args = Cli::parse();
 
-    let content = read_to_string(&args.path)
+    // Read file contents with BufReader
+    let file = File::open(&args.path)
         .with_context(|| format!("Error reading file {}", args.path.display()))?;
+    let mut reader = BufReader::new(file);
 
-    find_matches(color, &content, &args.pattern, &mut stdout());
+    find_matches(color, &args.pattern, &mut reader, &mut stdout())?;
 
     info!("Bye!");
     Ok(())
