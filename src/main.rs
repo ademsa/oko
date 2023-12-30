@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use clap::ArgAction::SetTrue;
 use clap::Parser;
 use confy::load;
 use env_logger;
@@ -12,8 +13,15 @@ use std::io::{stdout, BufReader};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-struct Cli {
+#[command(version, about)]
+struct Args {
+    #[arg(help = "Pattern")]
     pattern: String,
+    #[arg(short, long, help = "Count matches", action = SetTrue)]
+    count: bool,
+    #[arg(short, long, help = "Ignore case", action = SetTrue)]
+    ignore_case: bool,
+    #[arg(help = "File path")]
     path: PathBuf,
 }
 
@@ -55,14 +63,21 @@ fn main() -> Result<()> {
     let color = AnsiColors::from(cfg.color.as_str());
 
     // Parse arguments
-    let args = Cli::parse();
+    let args = Args::parse();
 
     // Read file contents with BufReader
     let file = File::open(&args.path)
         .with_context(|| format!("Error reading file {}", args.path.display()))?;
     let mut reader = BufReader::new(file);
 
-    find_matches(color, &args.pattern, &mut reader, &mut stdout())?;
+    find_matches(
+        color,
+        &args.pattern,
+        &args.count,
+        &args.ignore_case,
+        &mut reader,
+        &mut stdout(),
+    )?;
 
     info!("Bye!");
     Ok(())

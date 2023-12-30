@@ -1,13 +1,4 @@
-hello
-my
-friend
-!
-how
-are
-you
-doing
-?
-nice
-to
-meet
-you
+Hello my friend!
+How are you doing?
+Nice to meet you!
+My name is John.
