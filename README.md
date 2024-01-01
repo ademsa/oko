@@ -1,6 +1,6 @@
 # minigrep
 
-A small grep clone inspired by RustCLI Book [tutorial](https://rust-cli.github.io/book/tutorial/index.html).
+A small grep clone inspired by [RustCLI Book](https://rust-cli.github.io/book/tutorial/index.html).
 
 ### Running and Development
 

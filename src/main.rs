@@ -67,7 +67,8 @@ fn main() -> Result<()> {
 
     // Read file contents with BufReader
     let file = File::open(&args.path)
-        .with_context(|| format!("Error reading file {}", args.path.display()))?;
+        .with_context(|| format!("Error reading file {}", args.path.display()))
+        .unwrap();
     let mut reader = BufReader::new(file);
 
     find_matches(
