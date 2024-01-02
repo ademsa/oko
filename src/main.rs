@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 use anyhow::{Context, Result};
 use clap::ArgAction::SetTrue;
 use clap::Parser;
@@ -5,7 +6,7 @@ use confy::load;
 use env_logger;
 
 use log::info;
-use minigrep::find_matches;
+use minigreplib::find_matches;
 use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -30,6 +31,12 @@ struct Config {
     color: String,
 }
 
+/// CLI entrypoint
+///
+/// Example (Search "my" in content.txt file):
+/// ```bash
+/// minigrep my content.txt
+/// ```
 fn main() -> Result<()> {
     // Initialise logger
     env_logger::init();

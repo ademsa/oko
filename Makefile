@@ -28,3 +28,6 @@ coverage: coverage-clean coverage-lcov coverage-json coverage-html coverage-text
 
 clean: coverage-clean
 	cargo clean
+
+docs:
+	cargo doc --frozen --locked --offline --bins --no-deps

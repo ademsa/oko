@@ -5,6 +5,11 @@ description = "A small grep clone inspired by RustCLI Book"
 edition = "2021"
 publish = false
 
+[lib]
+name = "minigreplib"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 anyhow = "1.0.75"

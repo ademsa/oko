@@ -1,7 +1,11 @@
+//! # MinigrepLib
+//!
+//! Library for finding content in file
 use owo_colors::{AnsiColors, OwoColorize};
 
 use std::io::{BufRead, Result, Write};
 
+/// Find matches
 pub fn find_matches<R: BufRead>(
     color: AnsiColors,
     pattern: &str,
