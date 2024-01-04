@@ -1,6 +1,6 @@
 //! # MinigrepLib
 //!
-//! Library for finding content in file
+//! Library for finding term from stdin or file content
 use owo_colors::{AnsiColors, OwoColorize};
 
 use std::io::{BufRead, Result, Write};

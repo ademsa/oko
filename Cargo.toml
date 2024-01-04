@@ -1,7 +1,7 @@
 [package]
 name = "minigrep"
 version = "0.2.0"
-description = "A small grep clone inspired by RustCLI Book"
+description = "Find term in stdin or file content"
 edition = "2021"
 publish = false
 

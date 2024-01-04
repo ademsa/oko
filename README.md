@@ -1,16 +1,25 @@
 # minigrep
 
-A small grep clone inspired by [RustCLI Book](https://rust-cli.github.io/book/tutorial/index.html).
+Find term in stdin or file content
 
 ### Running and Development
 
+Build
+```bash
+cargo build
+```
+
 Run example
 ```bash
-export RUST_LOG=info
-cargo run my content.txt
+./target/debug/minigrep my content.txt
+```
+
+Run using pipe
+```bash
+cat content.txt | ./target/debug/minigrep my
 ```
 
 Run tests
 ```bash
-cargo test
+make test
 ```

@@ -1,4 +1,4 @@
-use minigrep::find_matches;
+use minigreplib::find_matches;
 use owo_colors::AnsiColors;
 
 use anyhow::Result;

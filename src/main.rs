@@ -1,4 +1,5 @@
 #![doc = include_str!("../README.md")]
+
 use anyhow::{Context, Result};
 use clap::ArgAction::SetTrue;
 use clap::Parser;
@@ -10,7 +11,7 @@ use minigreplib::find_matches;
 use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
-use std::io::{stdout, BufReader};
+use std::io::{stdout, BufRead, BufReader};
 use std::path::PathBuf;
 
 #[derive(Parser)]
@@ -23,7 +24,7 @@ struct Args {
     #[arg(short, long, help = "Ignore case", action = SetTrue)]
     ignore_case: bool,
     #[arg(help = "File path")]
-    path: PathBuf,
+    path: Option<PathBuf>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -36,6 +37,10 @@ struct Config {
 /// Example (Search "my" in content.txt file):
 /// ```bash
 /// minigrep my content.txt
+/// ```
+/// or
+/// ```bash
+/// cat content.txt | minigrep my
 /// ```
 fn main() -> Result<()> {
     // Initialise logger
@@ -71,21 +76,34 @@ fn main() -> Result<()> {
 
     // Parse arguments
     let args = Args::parse();
+    if !args.path.is_none() {
+        // Read file contents with BufReader
+        let file_path = &args.path.unwrap();
+        let file = File::open(file_path)
+            .with_context(|| format!("Error reading file {}", file_path.display()))
+            .unwrap();
+        let mut reader = BufReader::new(file);
 
-    // Read file contents with BufReader
-    let file = File::open(&args.path)
-        .with_context(|| format!("Error reading file {}", args.path.display()))
-        .unwrap();
-    let mut reader = BufReader::new(file);
-
-    find_matches(
-        color,
-        &args.pattern,
-        &args.count,
-        &args.ignore_case,
-        &mut reader,
-        &mut stdout(),
-    )?;
+        find_matches(
+            color,
+            &args.pattern,
+            &args.count,
+            &args.ignore_case,
+            &mut reader,
+            &mut stdout(),
+        )?;
+    } else {
+        let mut input = std::io::stdin().lock();
+        let mut reader = input.fill_buf().unwrap();
+        find_matches(
+            color,
+            &args.pattern,
+            &args.count,
+            &args.ignore_case,
+            &mut reader,
+            &mut stdout(),
+        )?;
+    }
 
     info!("Bye!");
     Ok(())
