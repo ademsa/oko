@@ -7,7 +7,7 @@ use confy::load;
 use env_logger;
 
 use log::info;
-use minigreplib::find_matches;
+use minigreplib::{count, find, write_results};
 use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -76,6 +76,7 @@ fn main() -> Result<()> {
 
     // Parse arguments
     let args = Args::parse();
+    let mut results = vec![];
     if !args.path.is_none() {
         // Read file contents with BufReader
         let file_path = &args.path.unwrap();
@@ -84,26 +85,26 @@ fn main() -> Result<()> {
             .unwrap();
         let mut reader = BufReader::new(file);
 
-        find_matches(
-            color,
-            &args.pattern,
-            &args.count,
-            &args.ignore_case,
-            &mut reader,
-            &mut stdout(),
-        )?;
+        // Find or Count pattern in content
+        if args.count {
+            results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
+        } else {
+            results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
+        }
     } else {
         let mut input = std::io::stdin().lock();
-        let mut reader = input.fill_buf().unwrap();
-        find_matches(
-            color,
-            &args.pattern,
-            &args.count,
-            &args.ignore_case,
-            &mut reader,
-            &mut stdout(),
-        )?;
+        let mut reader = input.fill_buf()?;
+
+        // Find or Count pattern in content
+        if args.count {
+            results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
+        } else {
+            results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
+        }
     }
+
+    // Write results
+    write_results(results, stdout());
 
     info!("Bye!");
     Ok(())

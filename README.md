@@ -1,6 +1,6 @@
 # minigrep
 
-Find term in stdin or file content
+Find pattern in stdin or file content
 
 ### Running and Development
 
