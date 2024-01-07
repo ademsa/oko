@@ -1,3 +1,6 @@
+lint:
+	cargo fmt -v --all
+
 test:
 	cargo test --no-fail-fast -r --frozen --locked --offline
 
