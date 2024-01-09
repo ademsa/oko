@@ -7,7 +7,7 @@ use confy::load;
 use env_logger;
 
 use log::info;
-use minigreplib::{count, find, write_results};
+use minigreplib::{count, count_regex, find, find_regex, write_results};
 use owo_colors::AnsiColors;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -19,6 +19,8 @@ use std::path::PathBuf;
 struct Args {
     #[arg(help = "Pattern")]
     pattern: String,
+    #[arg(short, long, help = "Is pattern regex?", action = SetTrue)]
+    regex: bool,
     #[arg(short, long, help = "Count matches", action = SetTrue)]
     count: bool,
     #[arg(short, long, help = "Ignore case", action = SetTrue)]
@@ -86,8 +88,12 @@ fn main() -> Result<()> {
         let mut reader = BufReader::new(file);
 
         // Find or Count pattern in content
-        if args.count {
+        if args.count && args.regex {
+            results.push(count_regex(&mut reader, &args.pattern)?.to_string());
+        } else if args.count && !args.regex {
             results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
+        } else if !args.count && args.regex {
+            results = find_regex(&mut reader, &args.pattern, color)?;
         } else {
             results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
         }
@@ -96,8 +102,12 @@ fn main() -> Result<()> {
         let mut reader = input.fill_buf()?;
 
         // Find or Count pattern in content
-        if args.count {
+        if args.count && args.regex {
+            results.push(count_regex(&mut reader, &args.pattern)?.to_string());
+        } else if args.count && !args.regex {
             results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
+        } else if !args.count && args.regex {
+            results = find_regex(&mut reader, &args.pattern, color)?;
         } else {
             results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
         }

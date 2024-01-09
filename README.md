@@ -11,12 +11,12 @@ cargo build
 
 Run example
 ```bash
-./target/debug/minigrep my content.txt
+./target/debug/minigrep here content.txt
 ```
 
 Run using pipe
 ```bash
-cat content.txt | ./target/debug/minigrep my
+cat content.txt | ./target/debug/minigrep here
 ```
 
 Run tests
