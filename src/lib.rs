@@ -81,7 +81,7 @@ pub fn find_regex<R: BufRead>(
                 // Push match
                 result.push_str(format!("{}", c.unwrap().as_str().color(color)).as_ref());
             }
-            
+
             results.push(result);
         }
     }

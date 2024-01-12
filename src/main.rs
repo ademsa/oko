@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use clap::ArgAction::SetTrue;
 use clap::Parser;
 use confy::load;
-use env_logger;
+use env_logger::Env;
 
 use log::info;
 use minigreplib::{count, count_regex, find, find_regex, write_results};
@@ -27,6 +27,8 @@ struct Args {
     ignore_case: bool,
     #[arg(help = "File path")]
     path: Option<PathBuf>,
+    #[arg(help = "Log level", default_value = "warn")]
+    log_level: Option<String>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -45,11 +47,71 @@ struct Config {
 /// cat content.txt | minigrep my
 /// ```
 fn main() -> Result<()> {
-    // Initialise logger
-    env_logger::init();
+    // Parse arguments
+    let args = Args::parse();
 
-    info!("Welcome!");
+    // Setup logging
+    setup_logging(args.log_level).unwrap();
 
+    info!("Minigrep");
+
+    // Get configuration
+    let cfg: Config = get_config()?;
+
+    // Find color from configuration
+    let color = AnsiColors::from(cfg.color.as_str());
+
+    // Read content
+    let results;
+    if !args.path.is_none() {
+        // Read file contents with BufReader
+        let file_path = &args.path.unwrap();
+        let file = File::open(file_path)
+            .with_context(|| format!("Error reading file {}", file_path.display()))
+            .unwrap();
+        let mut reader = BufReader::new(file);
+
+        results = get_results(
+            &mut reader,
+            &args.pattern,
+            &args.count,
+            &args.regex,
+            &args.ignore_case,
+            color,
+        )?;
+    } else {
+        // Read contents from stdin
+        let mut input = std::io::stdin().lock();
+        let mut reader = input.fill_buf()?;
+
+        results = get_results(
+            &mut reader,
+            &args.pattern,
+            &args.count,
+            &args.regex,
+            &args.ignore_case,
+            color,
+        )?;
+    }
+
+    // Write results
+    write_results(results, stdout());
+
+    info!("Exiting...");
+
+    Ok(())
+}
+
+fn setup_logging(log_level: Option<String>) -> Result<()> {
+    let env = Env::default().filter_or("MINIGREP_LOG_LEVEL", log_level.unwrap());
+
+    env_logger::init_from_env(env);
+
+    Ok(())
+}
+
+/// Get configuration
+fn get_config() -> Result<Config> {
     // Default config
     let default_config = Config {
         color: "green".to_string(),
@@ -70,52 +132,29 @@ fn main() -> Result<()> {
             }
         })?;
 
-    // Display cfg
-    //dbg!(&cfg);
+    Ok(cfg)
+}
 
-    // Find color from configuration
-    let color = AnsiColors::from(cfg.color.as_str());
+/// Find or Count pattern in content
+fn get_results<R: BufRead>(
+    reader: &mut R,
+    pattern: &str,
+    count_mode: &bool,
+    regex: &bool,
+    ignore_case: &bool,
+    color: AnsiColors,
+) -> Result<Vec<String>> {
+    let mut results: Vec<String> = vec![];
 
-    // Parse arguments
-    let args = Args::parse();
-    let mut results = vec![];
-    if !args.path.is_none() {
-        // Read file contents with BufReader
-        let file_path = &args.path.unwrap();
-        let file = File::open(file_path)
-            .with_context(|| format!("Error reading file {}", file_path.display()))
-            .unwrap();
-        let mut reader = BufReader::new(file);
-
-        // Find or Count pattern in content
-        if args.count && args.regex {
-            results.push(count_regex(&mut reader, &args.pattern)?.to_string());
-        } else if args.count && !args.regex {
-            results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
-        } else if !args.count && args.regex {
-            results = find_regex(&mut reader, &args.pattern, color)?;
-        } else {
-            results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
-        }
+    if *count_mode && *regex {
+        results.push(count_regex(reader, &pattern)?.to_string());
+    } else if *count_mode && !*regex {
+        results.push(count(reader, &pattern, &ignore_case)?.to_string());
+    } else if !*count_mode && *regex {
+        results = find_regex(reader, &pattern, color)?;
     } else {
-        let mut input = std::io::stdin().lock();
-        let mut reader = input.fill_buf()?;
-
-        // Find or Count pattern in content
-        if args.count && args.regex {
-            results.push(count_regex(&mut reader, &args.pattern)?.to_string());
-        } else if args.count && !args.regex {
-            results.push(count(&mut reader, &args.pattern, &args.ignore_case)?.to_string());
-        } else if !args.count && args.regex {
-            results = find_regex(&mut reader, &args.pattern, color)?;
-        } else {
-            results = find(&mut reader, &args.pattern, &args.ignore_case, color)?;
-        }
+        results = find(reader, &pattern, &ignore_case, color)?;
     }
 
-    // Write results
-    write_results(results, stdout());
-
-    info!("Bye!");
-    Ok(())
+    Ok(results)
 }
