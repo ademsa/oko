@@ -1,135 +1,96 @@
 //! # MinigrepLib
 //!
 //! Library for finding pattern in stdin or file content
-use owo_colors::{AnsiColors, OwoColorize};
-
-use regex::Regex;
 use std::io::{BufRead, Result, Write};
 
-/// Find pattern
+use owo_colors::{AnsiColors, OwoColorize};
+use regex::RegexBuilder;
+
+/// Find a phrase or pattern
 pub fn find<R: BufRead>(
     reader: &mut R,
     pattern: &str,
     ignore_case: &bool,
-    color: AnsiColors,
-) -> Result<Vec<String>> {
-    let mut target_pattern = pattern.to_lowercase();
-    if !*ignore_case {
-        target_pattern = pattern.to_string();
-    }
+) -> Result<Vec<(u32, Vec<(String, Option<String>)>)>> {
+    let target_pattern = RegexBuilder::new(&pattern)
+        .case_insensitive(*ignore_case)
+        .build();
 
-    let mut results: Vec<String> = vec![];
+    let mut results: Vec<(u32, Vec<(String, Option<String>)>)> = vec![];
     for (idx, line) in reader.by_ref().lines().enumerate() {
-        let mut content = line?;
-        if *ignore_case {
-            content = content.to_lowercase();
+        let content = line?;
+        let mut result: Vec<(String, Option<String>)> = vec![];
+        let mut prev_m_end_idx = 0;
+        for m in target_pattern.as_ref().unwrap().find_iter(content.as_str()) {
+            // Write content before and match
+            result.push((
+                content[prev_m_end_idx..m.start()].to_string(),
+                Some(m.as_str().to_string()),
+            ));
+
+            // Set current start index
+            prev_m_end_idx = m.end();
         }
-        let matches = content.matches(&target_pattern);
-        if matches.count() > 0 {
-            let mut result = String::new();
 
-            // Push line number
-            result.push_str(format!("{}: ", idx + 1).as_str().as_ref());
+        if prev_m_end_idx != 0 {
+            // Write remaining content
+            result.push((content[prev_m_end_idx..].to_string(), None));
 
-            let mut prev_m_start_idx = 0;
-            let mut prev_m_end_idx = 0;
-            for (m_idx, m) in content.match_indices(&target_pattern) {
-                // Push content before match
-                result.push_str(
-                    format!("{}", &content[prev_m_start_idx..m_idx])
-                        .as_str()
-                        .as_ref(),
-                );
-
-                // Push match
-                result.push_str(format!("{}", m.color(color)).as_str().as_ref());
-
-                // Set indexes
-                prev_m_start_idx = m_idx;
-                prev_m_end_idx = prev_m_start_idx + m.len();
-            }
-            // Push remaining content
-            result.push_str(format!("{}", &content[prev_m_end_idx..]).as_str().as_ref());
-
-            results.push(result);
+            // Store results for line
+            results.push((idx as u32, result));
         }
     }
 
     Ok(results)
 }
 
-/// Find pattern with regex
-pub fn find_regex<R: BufRead>(
-    reader: &mut R,
-    pattern: &str,
-    color: AnsiColors,
-) -> Result<Vec<String>> {
-    let pattern_regex = Regex::new(&pattern).unwrap();
-
-    let mut results: Vec<String> = vec![];
-    let mut captures;
-    for (idx, line) in reader.lines().enumerate() {
-        let content = line.unwrap();
-        captures = pattern_regex.captures(content.as_str());
-        if !captures.is_none() {
-            let mut result = String::new();
-
-            // Push line number
-            result.push_str(format!("{}: ", idx + 1).as_str().as_ref());
-
-            for (_, c) in captures.unwrap().iter().enumerate() {
-                // Push match
-                result.push_str(format!("{}", c.unwrap().as_str().color(color)).as_ref());
-            }
-
-            results.push(result);
-        }
-    }
-
-    Ok(results)
-}
-
-/// Count pattern
+/// Count a phrase or pattern
 pub fn count<R: BufRead>(reader: &mut R, pattern: &str, ignore_case: &bool) -> Result<u32> {
-    let mut results_counter = 0;
+    let target_pattern = RegexBuilder::new(&pattern)
+        .case_insensitive(*ignore_case)
+        .build();
 
-    let mut target_pattern = pattern.to_lowercase();
-    if !*ignore_case {
-        target_pattern = pattern.to_string();
-    }
-
+    let mut results = 0;
     for line in reader.by_ref().lines() {
-        let mut content = line?;
-        if *ignore_case {
-            content = content.to_lowercase();
-        }
-        let matches = content.matches(&target_pattern);
-        if matches.count() > 0 {
-            results_counter += content.match_indices(&target_pattern).count() as u32;
-        }
+        results += target_pattern
+            .as_ref()
+            .unwrap()
+            .find_iter(line?.as_str())
+            .count() as u32;
     }
 
-    Ok(results_counter)
+    Ok(results)
 }
 
-/// Count pattern with regex
-pub fn count_regex<R: BufRead>(reader: &mut R, pattern: &str) -> Result<u32> {
-    let pattern_regex = Regex::new(&pattern).unwrap();
-
-    let mut results_counter = 0;
-    let mut captures;
-    for line in reader.lines() {
-        let content = line.unwrap();
-        captures = pattern_regex.captures(content.as_str());
-        if !captures.is_none() {
-            results_counter += captures.unwrap().len() as u32
+/// Write find results
+pub fn write_find_results(
+    results: Vec<(u32, Vec<(String, Option<String>)>)>,
+    color: AnsiColors,
+    mut writer: impl Write,
+) {
+    for r in results.iter() {
+        let (m_idx, m) = r;
+        write!(writer, "{}: ", m_idx.to_string()).unwrap();
+        for m_slice in m.iter() {
+            let (content_before_match, m_pattern) = m_slice;
+            if m_pattern.is_none() {
+                write!(writer, "{}", content_before_match).unwrap();
+            } else {
+                write!(
+                    writer,
+                    "{}{}",
+                    content_before_match,
+                    m_pattern.as_ref().unwrap().as_str().color(color)
+                )
+                .unwrap();
+            }
         }
-    }
 
-    Ok(results_counter)
+        write!(writer, "\n").unwrap()
+    }
 }
 
-/// Write results
-pub fn write_results(results: Vec<String>, mut writer: impl Write) {
-    writeln!(writer, "{}", results.join("\n")).unwrap();
+///Write count results
+pub fn write_count_results(results: String, color: AnsiColors, mut writer: impl Write) {
+    writeln!(writer, "{}", results.color(color)).unwrap();
 }

@@ -21,7 +21,7 @@ fn test_config_file_not_found() {
 
     cmd.assert()
         .success()
-        .stdout(contains("2: \u{1b}[32mmy\u{1b}[39m\n"));
+        .stdout(contains("1: \u{1b}[32mmy\u{1b}[39m\n"));
 
     file.close().unwrap();
 }
@@ -49,7 +49,7 @@ fn test_find() {
 
     cmd.assert()
         .success()
-        .stdout(contains("2: \u{1b}[32mmy\u{1b}[39m\n"));
+        .stdout(contains("1: \u{1b}[32mmy\u{1b}[39m\n"));
 
     file.close().unwrap();
 }
@@ -62,11 +62,11 @@ fn test_find_regex() {
 
     let mut cmd = Command::cargo_bin("minigrep").unwrap();
 
-    cmd.arg(r"\byou\b").arg("-r").arg(file.path());
+    cmd.arg(r"\byou\b").arg(file.path());
 
-    cmd.assert().success().stdout(contains(
-        "2: \u{1b}[32myou\u{1b}[39m\n3: \u{1b}[32myou\u{1b}[39m\n",
-    ));
+    cmd.assert()
+        .success()
+        .stdout(contains("1: How are \u{1b}[32myou\u{1b}[39m doing?\n"));
 
     file.close().unwrap();
 }
@@ -93,7 +93,7 @@ fn test_count_regex() {
 
     let mut cmd = Command::cargo_bin("minigrep").unwrap();
 
-    cmd.arg(r"\byou\b").arg("-c").arg("-r").arg(file.path());
+    cmd.arg(r"\byou\b").arg("-c").arg(file.path());
 
     cmd.assert().success().stdout(contains("2"));
 

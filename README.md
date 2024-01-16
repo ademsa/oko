@@ -38,7 +38,8 @@ make test
 - [x] Regex search
 - [x] Count mode
 - [x] Add log level arg
-- [ ] Split output from search
+- [x] Split output from search
 - [ ] Alternative outputs like json
 - [ ] Arg to control if index is sent to output
 - [ ] Write output to file
+- [ ] Improved help text in CLI
