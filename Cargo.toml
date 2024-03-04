@@ -1,12 +1,12 @@
 [package]
-name = "minigrep"
+name = "oko"
 version = "0.2.1"
 description = "Search, Count, Transform and Output"
 edition = "2021"
 publish = false
 
 [lib]
-name = "minigreplib"
+name = "okolib"
 path = "src/lib.rs"
 crate-type = ["lib"]
 

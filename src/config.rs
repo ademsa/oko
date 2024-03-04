@@ -42,15 +42,15 @@ pub fn get_config(config_name: &str) -> Result<Config> {
     let default_config = Config::new("".to_string(), "green".to_string());
 
     // Store default configuration if file not found
-    // Example on macOS: /Users/USERNAME/Library/Application\ Support/rs.minigrep/local.toml
-    let cfg: Config = confy::get_configuration_file_path("minigrep", config_name)
+    // Example on macOS: /Users/USERNAME/Library/Application\ Support/rs.oko/local.toml
+    let cfg: Config = confy::get_configuration_file_path("oko", config_name)
         .and_then(|file_path| {
             if file_path.exists() {
-                let cfg: Config = load("minigrep", config_name)?;
+                let cfg: Config = load("oko", config_name)?;
                 Ok(cfg)
             } else {
                 info!("Config file not found");
-                confy::store("minigrep", config_name, &default_config)?;
+                confy::store("oko", config_name, &default_config)?;
                 info!("Stored default config at {}", file_path.display());
                 Ok(default_config)
             }

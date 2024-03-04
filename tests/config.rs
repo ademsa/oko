@@ -25,7 +25,7 @@ mod config_tests {
         let config_name = "test_get_config_default";
         let _context = TestContext::new(
             || {
-                confy::get_configuration_file_path("minigrep", config_name)
+                confy::get_configuration_file_path("oko", config_name)
                     .and_then(|file_path| {
                         if file_path.exists() {
                             remove_file(file_path).unwrap();
@@ -48,19 +48,19 @@ mod config_tests {
         let config_name = "test_get_config_exists";
         let _context = TestContext::new(
             || {
-                confy::get_configuration_file_path("minigrep", config_name)
+                confy::get_configuration_file_path("oko", config_name)
                     .and_then(|file_path| {
                         if file_path.exists() {
                             remove_file(file_path).unwrap();
                         }
                         let default_config = Config::new("red".to_string(), "blue".to_string());
-                        confy::store("minigrep", config_name, &default_config)?;
+                        confy::store("oko", config_name, &default_config)?;
                         Ok(())
                     })
                     .unwrap();
             },
             || {
-                confy::get_configuration_file_path("minigrep", config_name)
+                confy::get_configuration_file_path("oko", config_name)
                     .and_then(|file_path| {
                         if file_path.exists() {
                             remove_file(file_path).unwrap();

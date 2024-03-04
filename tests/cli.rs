@@ -16,7 +16,7 @@ mod cli_tests {
     // Default command - search
     #[test]
     fn test_default_command_config_file_not_found() {
-        confy::get_configuration_file_path("minigrep", "local")
+        confy::get_configuration_file_path("oko", "local")
             .and_then(|file_path| {
                 if file_path.exists() {
                     remove_file(file_path).unwrap();
@@ -28,7 +28,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert").arg("-i").arg(file.path());
 
@@ -41,7 +41,7 @@ mod cli_tests {
 
     #[test]
     fn test_default_command_content_file_not_found() {
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert").arg("-i").arg("content-2.txt");
 
@@ -59,7 +59,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert")
             .arg("-i")
@@ -84,7 +84,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert")
             .arg("-i")
@@ -108,7 +108,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert").arg("-i").arg(file.path());
 
@@ -124,7 +124,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert")
             .arg("-i")
@@ -144,7 +144,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert").arg("-i").arg(file.path()).arg("-n");
 
@@ -160,7 +160,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("here").arg("-c").arg("-i").arg(file.path());
 
@@ -179,7 +179,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg(r"\bconcert\b").arg("-i").arg(file.path());
 
@@ -195,7 +195,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg(r"\bhere\b").arg("-c").arg("-i").arg(file.path());
 
@@ -214,7 +214,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("concert")
             .arg("-i")
@@ -225,7 +225,7 @@ mod cli_tests {
         cmd.assert()
             .success()
             .stdout(contains("I\'m here for a \u{1b}[32mconcert\u{1b}[39m.\n"))
-            .stderr(contains("MINIGREP\n"))
+            .stderr(contains("OKO\n"))
             .stderr(contains("Exiting..."));
 
         file.close().unwrap();
@@ -233,7 +233,7 @@ mod cli_tests {
 
     #[test]
     fn test_default_command_output_format_plain_from_stdin() {
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.write_stdin(
             "I'm here shopping. How about you? What brings you here?\nI'm here for a concert.",
@@ -249,7 +249,7 @@ mod cli_tests {
 
     #[test]
     fn test_search_command_content_file_not_found() {
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("concert")
@@ -270,7 +270,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("concert")
@@ -296,7 +296,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("concert")
@@ -321,7 +321,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search").arg("concert").arg("-i").arg(file.path());
 
@@ -337,7 +337,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("concert")
@@ -358,7 +358,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("concert")
@@ -378,7 +378,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg("here")
@@ -401,7 +401,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg(r"\bconcert\b")
@@ -420,7 +420,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("search")
             .arg(r"\bhere\b")
@@ -442,7 +442,7 @@ mod cli_tests {
 
     #[test]
     fn test_count_command_content_file_not_found() {
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("concert")
@@ -463,7 +463,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("concert")
@@ -489,7 +489,7 @@ mod cli_tests {
         let search_output_file = NamedTempFile::new("output.txt").unwrap();
         search_output_file.write_str("").unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("concert")
@@ -514,7 +514,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count").arg("concert").arg("-i").arg(file.path());
 
@@ -528,7 +528,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("concert")
@@ -549,7 +549,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("concert")
@@ -567,7 +567,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg("here")
@@ -585,7 +585,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg(r"\bconcert\b")
@@ -602,7 +602,7 @@ mod cli_tests {
         let file = NamedTempFile::new("content-1.txt").unwrap();
         file.write_str(CONTENT).unwrap();
 
-        let mut cmd = Command::cargo_bin("minigrep").unwrap();
+        let mut cmd = Command::cargo_bin("oko").unwrap();
 
         cmd.arg("count")
             .arg(r"\bhere\b")

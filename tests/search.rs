@@ -5,8 +5,8 @@ mod content;
 mod search_tests {
     use std::io::BufReader;
 
-    use minigreplib::search::{count, search};
-    use minigreplib::search_results::{Match, SearchResult, SearchResults};
+    use okolib::search::{count, search};
+    use okolib::search_results::{Match, SearchResult, SearchResults};
 
     use super::content::content::CONTENT;
 

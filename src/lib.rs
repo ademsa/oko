@@ -1,4 +1,4 @@
-//! # Minigrep Lib
+//! # OKO Lib
 //!
 //! Search, Count, Transform and Output
 

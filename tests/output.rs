@@ -3,12 +3,12 @@ mod output_tests {
     use owo_colors::AnsiColors;
     use std::io::Result;
 
-    use minigreplib::output::{write_count_results, write_search_results};
-    use minigreplib::output_destination::OutputDestination;
-    use minigreplib::output_format::OutputFormat;
-    use minigreplib::output_style::OutputStyle;
-    use minigreplib::output_writer::OutputWriter;
-    use minigreplib::search_results::{Match, SearchResult, SearchResults};
+    use okolib::output::{write_count_results, write_search_results};
+    use okolib::output_destination::OutputDestination;
+    use okolib::output_format::OutputFormat;
+    use okolib::output_style::OutputStyle;
+    use okolib::output_writer::OutputWriter;
+    use okolib::search_results::{Match, SearchResult, SearchResults};
 
     fn get_search_results() -> Result<SearchResults> {
         let mut results = SearchResults::new("here".to_string());

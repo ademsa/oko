@@ -3,14 +3,14 @@ use std::path::PathBuf;
 use clap::ArgAction::SetTrue;
 use clap::{command, Parser, Subcommand};
 
-use minigreplib::output_format::OutputFormat;
+use okolib::output_format::OutputFormat;
 
 #[derive(Parser)]
 #[clap(
     author,
-    name = "minigrep",
+    name = "oko",
     about = "Search, Count, Transform and Output",
-    after_help = "For help with specific command, run `minigrep help <command>`."
+    after_help = "For help with specific command, run `oko help <command>`."
 )]
 #[clap(version, about)]
 pub struct Cli {

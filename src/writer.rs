@@ -2,12 +2,12 @@ use std::fs::File;
 use std::io::{stdout, Result};
 use std::path::PathBuf;
 
-use minigreplib::output_destination::OutputDestination;
+use okolib::output_destination::OutputDestination;
 use owo_colors::AnsiColors;
 
-use minigreplib::output_format::OutputFormat;
-use minigreplib::output_style::OutputStyle;
-use minigreplib::output_writer::OutputWriter;
+use okolib::output_format::OutputFormat;
+use okolib::output_style::OutputStyle;
+use okolib::output_writer::OutputWriter;
 
 pub fn get_writer<'a>(
     output_path: Option<PathBuf>,

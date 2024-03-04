@@ -1,25 +1,35 @@
-# MINIGREP
+```
+_____________ ________ 
+__  __ \__  //_/_  __ \
+_  / / /_  ,<  _ / / /
+/ /_/ /_  /| | / /_/ /
+\____/ /_/ |_| \____/
+```
 
-Search, Count, Transform and Output
+OKO: Search, Count, Transform and Output Content
 
 ### Running and Development
 
 Build
+
 ```bash
 make build
 ```
 
 Run example
+
 ```bash
-./target/debug/minigrep here -i ./examples/content.txt
+./target/debug/oko here -i ./examples/content.txt
 ```
 
 Run using pipe
+
 ```bash
-cat ./examples/content.txt | ./target/debug/minigrep here
+cat ./examples/content.txt | ./target/debug/oko here
 ```
 
 Run tests
+
 ```bash
 make test
 ```

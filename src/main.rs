@@ -11,8 +11,8 @@ use crate::logging::setup_logging;
 use crate::reader::get_reader;
 use crate::writer::get_writer;
 
-use minigreplib::output::{write_count_results, write_search_results};
-use minigreplib::search::{count, search};
+use okolib::output::{write_count_results, write_search_results};
+use okolib::search::{count, search};
 
 mod args;
 mod config;
@@ -24,15 +24,15 @@ mod writer;
 ///
 /// Example (Search "here" in content.txt file):
 /// ```bash
-/// minigrep here -i examples/content.txt
+/// oko here -i examples/content.txt
 /// ```
 /// or
 /// ```bash
-/// minigrep search here -i examples/content.txt
+/// oko search here -i examples/content.txt
 /// ```
 /// or
 /// ```bash
-/// cat examples/content.txt | minigrep here
+/// cat examples/content.txt | oko here
 /// ```
 fn main() -> Result<()> {
     // Parse arguments
@@ -41,7 +41,7 @@ fn main() -> Result<()> {
     // Setup logging
     setup_logging(args.log_level).unwrap();
 
-    info!("MINIGREP");
+    info!("OKO");
 
     // Get configuration
     let cfg: Config = get_config("local").unwrap();
