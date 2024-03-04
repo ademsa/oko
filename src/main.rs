@@ -1,100 +1,130 @@
 #![doc = include_str!("../README.md")]
 
-use log::info;
-use std::fs::File;
-use std::io::{stdin, stdout, BufRead, BufReader};
+use std::io::Result;
 
-use anyhow::{Context, Result};
 use clap::Parser;
-use confy::load;
-use env_logger::Env;
-use owo_colors::AnsiColors;
+use log::info;
 
-use crate::args::Args;
-use crate::config::Config;
+use crate::args::{Cli, Command};
+use crate::config::{get_config, Config};
+use crate::logging::setup_logging;
+use crate::reader::get_reader;
+use crate::writer::get_writer;
+
+use minigreplib::output::{write_count_results, write_search_results};
+use minigreplib::search::{count, search};
 
 mod args;
 mod config;
+mod logging;
+mod reader;
+mod writer;
 
-use minigreplib::{count, find, write_count_results, write_find_results};
-
-/// CLI entrypoint
+/// CLI
 ///
-/// Example (Search "my" in content.txt file):
+/// Example (Search "here" in content.txt file):
 /// ```bash
-/// minigrep my content.txt
+/// minigrep here -i examples/content.txt
 /// ```
 /// or
 /// ```bash
-/// cat content.txt | minigrep my
+/// minigrep search here -i examples/content.txt
+/// ```
+/// or
+/// ```bash
+/// cat examples/content.txt | minigrep here
 /// ```
 fn main() -> Result<()> {
     // Parse arguments
-    let args = Args::parse();
+    let args = Cli::parse();
 
     // Setup logging
     setup_logging(args.log_level).unwrap();
 
-    info!("Minigrep");
+    info!("MINIGREP");
 
     // Get configuration
-    let cfg: Config = get_config()?;
+    let cfg: Config = get_config("local").unwrap();
 
-    // Find color from configuration
-    let color = AnsiColors::from(cfg.color.as_str());
+    // Execute command or defaults
+    match args.command {
+        Some(Command::Search {
+            pattern,
+            ignore_case,
+            input_path,
+            output_path,
+            output_format,
+            output_line_number,
+        }) => {
+            // Get reader, ie content
+            let mut reader = get_reader(input_path).unwrap();
 
-    // Read content
-    let mut reader: Box<dyn BufRead> = match &args.path {
-        None => Box::new(BufReader::new(stdin())),
-        Some(file_path) => Box::new(BufReader::new(
-            File::open(file_path)
-                .with_context(|| format!("Error reading file {}", file_path.display()))
-                .unwrap(),
-        )),
-    };
+            // Search pattern
+            let results = search(&mut reader, &pattern, &ignore_case).unwrap();
 
-    if args.count {
-        let results = count(&mut reader, &args.pattern, &args.ignore_case)?;
-        write_count_results(results.to_string(), color, stdout());
-    } else {
-        let results = find(&mut reader, &args.pattern, &args.ignore_case)?;
-        write_find_results(results, color, stdout());
+            // Get writer
+            let mut writer = get_writer(
+                output_path,
+                output_format,
+                output_line_number,
+                cfg.get_content_color().unwrap(),
+                cfg.get_match_color().unwrap(),
+            )
+            .unwrap();
+
+            // Output results
+            write_search_results(results, &mut writer);
+        }
+        Some(Command::Count {
+            pattern,
+            ignore_case,
+            input_path,
+            output_path,
+            output_format,
+            output_line_number,
+        }) => {
+            // Get reader, ie content
+            let mut reader = get_reader(input_path).unwrap();
+
+            // Count pattern
+            let results = count(&mut reader, &pattern, &ignore_case).unwrap();
+
+            // Get writer
+            let mut writer = get_writer(
+                output_path,
+                output_format,
+                output_line_number,
+                cfg.get_content_color().unwrap(),
+                cfg.get_match_color().unwrap(),
+            )
+            .unwrap();
+
+            // Output results
+            write_count_results(results.to_string(), &mut writer);
+        }
+        None => {
+            // Get reader, ie content
+            let mut reader = get_reader(args.input_path).unwrap();
+
+            // Search pattern
+            let results = search(&mut reader, &args.pattern, &args.ignore_case).unwrap();
+
+            // Get writer
+            let mut writer = get_writer(
+                args.output_path,
+                args.output_format,
+                args.output_line_number,
+                cfg.get_content_color().unwrap(),
+                cfg.get_match_color().unwrap(),
+            )
+            .unwrap();
+
+            // Output results
+            write_search_results(results, &mut writer);
+        }
     }
 
     info!("Exiting...");
 
     Ok(())
-}
-
-fn setup_logging(log_level: Option<String>) -> Result<()> {
-    let env = Env::default().filter_or("MINIGREP_LOG_LEVEL", log_level.unwrap());
-
-    env_logger::init_from_env(env);
-
-    Ok(())
-}
-
-/// Get configuration
-fn get_config() -> Result<Config> {
-    // Default config
-    let default_config = Config {
-        color: "green".to_string(),
-    };
-
-    // Store default configuration file if none found
-    // Config file path: /Users/USERNAME/Library/Application\ Support/rs.minigrep/local.toml
-    let cfg: Config =
-        confy::get_configuration_file_path("minigrep", "local").and_then(|file_path| {
-            if file_path.exists() {
-                let cfg: Config = load("minigrep", "local")?;
-                Ok(cfg)
-            } else {
-                info!("Config file not found");
-                confy::store("minigrep", "local", &default_config)?;
-                info!("Stored default config at {}", file_path.display());
-                Ok(default_config)
-            }
-        })?;
-
-    Ok(cfg)
 }

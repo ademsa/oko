@@ -1,22 +1,22 @@
-# minigrep
+# MINIGREP
 
-Find pattern in stdin or file content
+Search, Count, Transform and Output
 
 ### Running and Development
 
 Build
 ```bash
-cargo build
+make build
 ```
 
 Run example
 ```bash
-./target/debug/minigrep here content.txt
+./target/debug/minigrep here -i ./examples/content.txt
 ```
 
 Run using pipe
 ```bash
-cat content.txt | ./target/debug/minigrep here
+cat ./examples/content.txt | ./target/debug/minigrep here
 ```
 
 Run tests
@@ -32,14 +32,17 @@ make test
 - [x] Coverage tooling
 - [x] Docs tooling
 - [x] Colors
-- [x] Find pattern in content from files
-- [x] Find pattern in content from stdin
+- [x] Search pattern in content from files
+- [x] Search pattern in content from stdin
 - [x] Case-insensitive search
 - [x] Regex search
 - [x] Count mode
 - [x] Add log level arg
 - [x] Split output from search
-- [ ] Alternative outputs like json
-- [ ] Arg to control if index is sent to output
-- [ ] Write output to file
-- [ ] Improved help text in CLI
+- [x] Write output to file
+- [x] Improved help text in CLI
+- [x] Alternative outputs like json
+- [x] Structured results
+- [x] Arg to control if index is sent to output
+- [x] Test Context (setup, teardown)
+- [x] Improved test suite
