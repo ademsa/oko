@@ -1,11 +1,12 @@
 <div style="text-align: center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo-darkmode.png" />
-        <img alt="OKO logo" src="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo.png" />
+        <img alt="OKO logo" src="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo.png" width="50%" />
     </picture>
 </div>
 
-<h1 style="text-align: center">OKO</h1>
+<br/>
+
 <div style="text-align: center">CLI to Search, Count, Transform and Output Content</div>
 
 ### Features
