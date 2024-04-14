@@ -1,4 +1,4 @@
-<div style="text-align: center">
+<div align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo-darkmode.png" />
         <img alt="OKO logo" src="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo.png" width="50%" />
@@ -7,7 +7,16 @@
 
 <br/>
 
-<div style="text-align: center">CLI to Search, Count, Transform and Output Content</div>
+<div  align="center">
+    CLI to Search, Count, Transform and Output Content
+</div>
+
+<div align="center">
+
+![Language](https://img.shields.io/badge/language-rust-red)
+![License](https://img.shields.io/github/license/ademsa/oko)
+
+</div>
 
 ### Features
 
