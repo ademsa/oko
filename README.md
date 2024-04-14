@@ -1,6 +1,6 @@
 <div style="text-align: center">
     <picture>
-        <source media="(prefers-color-schema: dark)" srcset="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo-darkmode.png" />
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo-darkmode.png" />
         <img alt="OKO logo" src="https://github.com/ademsa/oko/raw/main/assets/img/oko-logo-darkmode.png" />
     </picture>
 </div>
