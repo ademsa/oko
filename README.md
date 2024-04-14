@@ -11,10 +11,13 @@
     CLI to Search, Count, Transform and Output Content
 </div>
 
+<br/>
+
 <div align="center">
 
 ![Language](https://img.shields.io/badge/language-rust-red)
 ![License](https://img.shields.io/github/license/ademsa/oko)
+![Release](https://img.shields.io/github/v/release/ademsa/oko)
 
 </div>
 
